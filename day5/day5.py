@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from typing import List
+from multiprocessing import Pool
+from typing import Any, List, Tuple
 
 from tqdm import tqdm
 
@@ -68,15 +69,24 @@ def part2(almanac_str: str):
 
     almanac: Almanac = read_almanac(alamanac_sections_str)
 
-    min_location: float = float('inf')
+    arguments: List[Tuple[Almanac, int, int]] = []
     for seed_index in range(0, len(seed_ranges), 2):
         start_seed_range = seed_ranges[seed_index]
         length_seed_range = seed_ranges[seed_index + 1]
-        for i in tqdm(range(length_seed_range)):
-            seed_mapping = almanac.map_seed_nr(start_seed_range + i)
+        arguments.append((almanac, start_seed_range, length_seed_range))
+    with Pool() as p:
+        results = p.starmap(calc_seed_range, arguments)
+        print(results)
+    return min(results)
+    
+
+def calc_seed_range(almanac: Almanac, start_seed_range: int, length_seed_range: int) -> float:
+    min_location: float = float('inf')
+    for i in tqdm(range(length_seed_range)):
+        seed_mapping = almanac.map_seed_nr(start_seed_range + i)
             # print(f"{seed_mapping[0]}: {seed_mapping[-1]}\n{seed_mapping}")
-            if seed_mapping[-1] < min_location:
-                min_location = seed_mapping[-1]
+        if seed_mapping[-1] < min_location:
+            min_location = seed_mapping[-1]
     return min_location
 
 
