@@ -94,5 +94,6 @@ def calc_seed_range(almanac: Almanac, start_seed_range: int, length_seed_range: 
 
 if __name__ == "__main__":
     with open("day5/input.txt", "r") as f:
-        # print(part1(f.read()))
-        print(part2(f.read()))
+        content = f.read()
+        print(part1(content))
+        print(part2(content))

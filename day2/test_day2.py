@@ -10,5 +10,16 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"""
 def test_part1():
     assert part1(test_input.split("\n")) == 8
 
+
+def test_part1_full():
+    with open("day2/input.txt") as f:
+        assert part1(f.readlines()) == 2771
+
+
 def test_part2():
     assert part2(test_input.split("\n")) == 2286
+
+
+def test_part2_full():
+    with open("day2/input.txt") as f:
+        assert part2(f.readlines()) == 70924

@@ -15,3 +15,10 @@ def test_part1():
 
 def test_part2():
     assert part2(test_cards.split("\n")) == 30
+
+
+def test_part1_full():
+    with open("day4/input.txt", "r") as f:
+        content = f.readlines()
+        assert part1(content) == 23441
+        assert part2(content) == 5923918

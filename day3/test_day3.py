@@ -33,3 +33,9 @@ def test_part2():
 ...$.*....
 .664.598.."""
     assert solution(test_input)[1] == 467835
+
+def test_full():
+    with open("day3/input.txt", "r") as f:
+        part1, part2 = solution(f.read())
+        assert part1 == 539713
+        assert part2 == 84159075

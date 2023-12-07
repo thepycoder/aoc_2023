@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from typing import List
+from typing import List, Set
 
 MAX_VALUES = {
     "r": 12,
@@ -10,7 +10,7 @@ MAX_VALUES = {
 
 
 def part1(lines: List[str]):
-    impossible = set()
+    impossible: Set[int] = set()
     for line in lines:
         gamestr, cubes = line.split(": ")
         gamenr = int(gamestr.split()[1])
@@ -27,8 +27,7 @@ def part1(lines: List[str]):
 def part2(lines: List[str]):
     total_power = 0
     for line in lines:
-        gamestr, cubes = line.split(": ")
-        gamenr = int(gamestr.split()[1])
+        _, cubes = line.split(": ")
 
         maxes = {
             "r": 0,
@@ -42,13 +41,13 @@ def part2(lines: List[str]):
             if int(nr) > maxes[color]:
                 maxes[color] = int(nr)
         
-        power_of_game = np.prod(list(maxes.values()))
-        print(power_of_game)
+        power_of_game = int(np.prod(list(maxes.values())))
         total_power += power_of_game
     return total_power
 
 
 if __name__ == "__main__":
     with open("day2/input.txt", "r") as f:
-        # print(part1(f.readlines()))
-        print(part2(f.readlines()))
+        content = f.readlines()
+        print(part1(content))
+        print(part2(content))
