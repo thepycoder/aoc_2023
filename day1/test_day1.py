@@ -10,6 +10,11 @@ treb7uchet"""
     assert part1(example.splitlines()) == 142
 
 
+def test_part1_full():
+    with open("day1/input.txt") as f:
+        assert part1(f.readlines()) == 54634
+
+
 def test_part2():
     example = """two1nine
 eightwothree
@@ -19,3 +24,8 @@ xtwone3four
 zoneight234
 7pqrstsixteen"""
     assert part2(example.splitlines()) == 281
+
+
+def test_part2_full():
+    with open("day1/input.txt") as f:
+        assert part2(f.readlines()) == 53855

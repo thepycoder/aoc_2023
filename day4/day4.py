@@ -7,10 +7,10 @@ def part1(cards: List[str]) -> int:
     for card_line in cards:
         card_nr, card_points = get_points(card_line)
         points += card_points
-        print(f"{card_nr}: {card_points}")
+        # print(f"{card_nr}: {card_points}")
     return points
 
-def get_points(card_line, part2=False):
+def get_points(card_line: str, part2: bool = False):
     card_nr, cards = card_line.split(": ")
     winning_str, your_str = cards.split("|")
     winning_nrs = set(map(int, winning_str.strip().split()))
@@ -25,10 +25,10 @@ def get_points(card_line, part2=False):
 
 def part2(cards: List[str]) -> int:
     total_cards = 0
-    card_copies = defaultdict(int)
+    card_copies: defaultdict[int, int] = defaultdict(int)
     for card_line in cards:
         card_nr, card_points = get_points(card_line, part2=True)
-        for j in range(1 + card_copies[card_nr]):
+        for _ in range(1 + card_copies[card_nr]):
             total_cards += 1
             for i in range(card_nr + 1, card_nr + 1 + card_points):
                 card_copies[i] += 1
@@ -38,5 +38,6 @@ def part2(cards: List[str]) -> int:
 
 if __name__ == "__main__":
     with open("day4/input.txt", "r") as f:
-        # print(part1(f.readlines()))
-        print(part2(f.readlines()))
+        content = f.readlines()
+        print(part1(content))
+        print(part2(content))

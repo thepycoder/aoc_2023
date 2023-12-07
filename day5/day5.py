@@ -84,5 +84,6 @@ def part2(almanac_str: str):
 
 if __name__ == "__main__":
     with open("day5/input.txt", "r") as f:
-        # print(part1(f.read()))
-        print(part2(f.read()))
+        content = f.read()
+        print(part1(content))
+        print(part2(content))
