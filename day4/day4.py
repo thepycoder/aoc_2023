@@ -5,7 +5,7 @@ from typing import List
 def part1(cards: List[str]) -> int:
     points = 0
     for card_line in cards:
-        card_nr, card_points = get_points(card_line)
+        _, card_points = get_points(card_line)
         points += card_points
         # print(f"{card_nr}: {card_points}")
     return points
@@ -18,7 +18,7 @@ def get_points(card_line: str, part2: bool = False):
     card_points = len(your_nrs.intersection(winning_nrs))
     if card_points >= 1:
         card_points_list = [1]
-        [card_points_list.append(card_points_list[i - 1] * 2) for i in range(1, card_points)]
+        [card_points_list.append(card_points_list[i - 1] * 2) for i in range(1, card_points)]  # type: ignore [func-returns-value]
         return int(card_nr.split()[-1]), card_points_list[-1] if not part2 else len(card_points_list)
     else:
         return int(card_nr.split()[-1]), 0

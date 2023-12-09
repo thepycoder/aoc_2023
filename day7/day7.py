@@ -75,7 +75,8 @@ class Hand:
 def part1(lines: List[str]) -> int:
     hands: List[Hand] = []
     for line in lines:
-        hands.append(Hand.from_strings(*line.split()))
+        s_hand, s_bid = line.split()
+        hands.append(Hand.from_strings(s_hand=s_hand, s_bid=s_bid))
     
     total: int = 0
     for i, hand in enumerate(sorted(hands)):
@@ -87,7 +88,8 @@ def part1(lines: List[str]) -> int:
 def part2(lines: List[str]) -> int:
     hands: List[Hand] = []
     for line in lines:
-        hands.append(Hand.from_strings(*line.split(), part2=True))
+        s_hand, s_bid = line.split()
+        hands.append(Hand.from_strings(s_hand=s_hand, s_bid=s_bid, part2=True))
     
     total: int = 0
     for i, hand in enumerate(sorted(hands)):

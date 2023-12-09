@@ -1,8 +1,9 @@
 from collections import defaultdict
 import re
+from typing import Generator, List, Set, Tuple
 
 
-def get_search_coordinates(row_nr, column_nrs):
+def get_search_coordinates(row_nr: int, column_nrs: Tuple[int, int]) -> Generator[Tuple[int, int], None, None]:
     """Return a list of row, col coordinates around the given row-columnspan
     
     What I learned here, is that you can have as many yield statements as you like in a generator!
@@ -22,11 +23,11 @@ def get_search_coordinates(row_nr, column_nrs):
 
 
 class Debugger:
-    def __init__(self, grid_string, line_width) -> None:
+    def __init__(self, grid_string: str, line_width: int) -> None:
         self.grid_string = grid_string
         self.line_width = line_width - 1
 
-    def add_searched_coord(self, coordinate):
+    def add_searched_coord(self, coordinate: int):
         self.grid_string = self.grid_string[:coordinate] + "#" + self.grid_string[coordinate + 1:]
     
     def debug_print(self):
@@ -36,11 +37,14 @@ class Debugger:
 
 
 def solution(grid_string: str):
-    confirmed_serial_nrs = set()
-    gears = defaultdict(list)
+    confirmed_serial_nrs: Set[re.Match[str]] = set()
+    gears: defaultdict[Tuple[int, int], List[int]] = defaultdict(list)
 
     # grid_string = grid_string.replace(".", "a")
-    line_width = re.search("\n", grid_string).span()[0]
+    line_width_search = re.search("\n", grid_string)
+    if not line_width_search:
+        raise ValueError("Can't find line width in output?")
+    line_width = line_width_search.span()[0]
     grid_string = grid_string.replace("\n", "")
 
     dbg = Debugger(grid_string, line_width)
