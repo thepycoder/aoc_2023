@@ -8,7 +8,7 @@ def test_part1():
 .|.|.
 .L-J.
 ....."""
-    assert part1(example.splitlines()) == 4
+    assert part1(example.splitlines())[1] == 4
 
 
 def test_part1_b():
@@ -17,7 +17,7 @@ def test_part1_b():
 L|7||
 -L-J|
 L|-JF"""
-    assert part1(example.splitlines()) == 4
+    assert part1(example.splitlines())[1] == 4
 
 
 def test_part1_c():
@@ -26,7 +26,7 @@ def test_part1_c():
 SJLL7
 |F--J
 LJ.LJ"""
-    assert part1(example.splitlines()) == 8
+    assert part1(example.splitlines())[1] == 8
 
 
 def test_part1_full():
@@ -89,5 +89,8 @@ L7JLJL-JLJLJL--JLJ.L"""
 
 
 def test_part2_full():
-    with open("template/input.txt") as f:
-        assert part2(f.readlines()) == 0
+    with open("day10/input.txt", "r") as f:
+        content = f.readlines()
+        loop, distance = part1(content)
+        print(distance)
+        assert part2(content, set(loop)) == 451

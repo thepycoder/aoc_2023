@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 from tqdm import tqdm
 
-def part1(lines: List[str], expansion: int = 1):
+def part1(lines: List[str], expansion: int = 2):
     grid_l: List[List[str]] = []
     for line in lines:
         grid_l.append(list(line.strip()))
