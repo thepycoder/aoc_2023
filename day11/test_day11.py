@@ -22,15 +22,38 @@ def test_part1_first_error():
 
 
 def test_part1_full():
-    with open("template/input.txt") as f:
-        assert part1(f.readlines()) == 0
+    with open("day11/input.txt") as f:
+        assert part1(f.readlines()) == 10885634
 
 
-def test_part2():
-    example = """"""
-    assert part2(example.splitlines()) == 0
+def test_part2_10():
+    example = """...#......
+.......#..
+#.........
+..........
+......#...
+.#........
+.........#
+..........
+.......#..
+#...#....."""
+    assert part2(example.splitlines(), expansion=10) == 1030
+
+
+def test_part2_100():
+    example = """...#......
+.......#..
+#.........
+..........
+......#...
+.#........
+.........#
+..........
+.......#..
+#...#....."""
+    assert part2(example.splitlines(), expansion=100) == 8410
 
 
 def test_part2_full():
-    with open("template/input.txt") as f:
-        assert part2(f.readlines()) == 0
+    with open("day11/input.txt") as f:
+        assert part2(f.readlines(), expansion=1000000) == 707505470642
