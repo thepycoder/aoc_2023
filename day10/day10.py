@@ -11,6 +11,11 @@ VALID_PIPES = {
     "W": ["S", "-", "L", "F"]
 }
 
+CROSSED_PIPES = {
+    "V": ["S", "-", "7", "F", "J", "L"],
+    "H": ["S", "|", "7", "J", "L", "F"],
+}
+
 # VALID_PIPES = {
 #     "S": set(["|", "-", "L", "J", "7", "F"]),
 #     "|": set(["|", "7"])
@@ -66,12 +71,29 @@ def part1(lines: List[str]) -> Tuple[List[Tuple[int, int]], int]:
     raise ValueError("This means there is no solution found?")
 
 
+def replace_horizontal(chunk: str):
+    chunk = chunk.replace("LJ", "||")
+    chunk = chunk.replace("F7", "||")
+    chunk = chunk.replace("FJ", "|")
+    chunk = chunk.replace("L7", "|")
+    return chunk
+
+
+def replace_vertical(chunk: str):
+    chunk = chunk.replace("7J", "--")
+    chunk = chunk.replace("FL", "--")
+    chunk = chunk.replace("7L", "-")
+    chunk = chunk.replace("FJ", "-")
+    return chunk
+
+
 def part2(lines: List[str], loop: Set[Tuple[int, int]]):
     grid_l: List[List[str]] = []
     for line in lines:
         grid_l.append(list(line))
     grid = np.array(grid_l)
     maxi: Tuple[int, int] = (grid.shape[0], grid.shape[1])
+    display_grid = grid.copy()
 
     total = 0
     for i in range(grid.shape[0]):
@@ -82,40 +104,46 @@ def part2(lines: List[str], loop: Set[Tuple[int, int]]):
 
             # Use raycasting algorithm to determine if point is inside or outside of loop
             # Cast left
+            # left_coordinates = [(i, x) for x in range(j) if grid[i, x] in CROSSED_PIPES["H"]]
+            # s = len(set(left_coordinates).intersection(loop))
             left_coordinates = [(i, x) for x in range(j) if grid[i, x] != "-"]
-            # left_chunks = "".join([" " if c not in loop else grid[c] for c in left_coordinates]).split()
-            # left_chunks = [u.replace("-", "") for u in left_chunks]
-            # s = sum([len(c) for c in left_chunks])
-            s = len(set(left_coordinates).intersection(loop))
+            left_chunks = "".join([" " if c not in loop else grid[c] for c in left_coordinates]).split()
+            left_chunks = [replace_horizontal(u) for u in left_chunks]
+            s = sum([len(c) for c in left_chunks])
             if s % 2 == 0:
                 continue
             # Cast right
+            # right_coordinates = [(i, x) for x in range(j, maxi[1]) if grid[i, x] in CROSSED_PIPES["H"]]
+            # s = len(set(right_coordinates).intersection(loop))
             right_coordinates = [(i, x) for x in range(j, maxi[1]) if grid[i, x] != "-"]
-            # right_chunks = "".join([" " if c not in loop else grid[c] for c in right_coordinates]).split()
-            # right_chunks = [u.replace("-", "") for u in right_chunks]
-            # s = sum([len(c) for c in right_chunks])
-            s = len(set(right_coordinates).intersection(loop))
+            right_chunks = "".join([" " if c not in loop else grid[c] for c in right_coordinates]).split()
+            right_chunks = [replace_horizontal(u) for u in right_chunks]
+            s = sum([len(c) for c in right_chunks])
             if s % 2 == 0:
                 continue
             # Cast up
+            # up_coordinates = [(x, j) for x in range(i) if grid[x, j] in CROSSED_PIPES["V"]]
+            # s = len(set(up_coordinates).intersection(loop))
             up_coordinates = [(x, j) for x in range(i) if grid[x, j] != "|"]
-            # up_chunks = "".join([" " if c not in loop else grid[c] for c in up_coordinates]).split()
-            # up_chunks = [u.replace("|", "") for u in up_chunks]
-            # s = sum([len(c) for c in up_chunks])
-            s = len(set(up_coordinates).intersection(loop))
+            up_chunks = "".join([" " if c not in loop else grid[c] for c in up_coordinates]).split()
+            up_chunks = [replace_vertical(u) for u in up_chunks]
+            s = sum([len(c) for c in up_chunks])
             if s % 2 == 0:
                 continue
             # Cast down
+            # down_coordinates = [(x, j) for x in range(i, maxi[0]) if grid[x, j] in CROSSED_PIPES["V"]]
+            # s = len(set(down_coordinates).intersection(loop))
             down_coordinates = [(x, j) for x in range(i, maxi[0]) if grid[x, j] != "|"]
-            # down_chunks = "".join([" " if c not in loop else grid[c] for c in down_coordinates]).split()
-            # down_chunks = [u.replace("|", "") for u in down_chunks]
-            # s = sum([len(c) for c in down_chunks])
-            s = len(set(down_coordinates).intersection(loop))
+            down_chunks = "".join([" " if c not in loop else grid[c] for c in down_coordinates]).split()
+            down_chunks = [replace_vertical(u) for u in down_chunks]
+            s = sum([len(c) for c in down_chunks])
             if s % 2 == 0:
                 continue
 
             print(f"{(i, j)} is IN!")
+            display_grid[i, j] = "#"
             total += 1
+    print("\n".join(["".join(row) for row in display_grid]))
     return total
 
 
