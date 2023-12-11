@@ -1,31 +1,37 @@
 from collections import deque
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 import numpy as np
+from numpy.typing import NDArray
 
 VALID_PIPES = {
-    "N": ["|", "7", "F"],
-    "E": ["-", "7", "J"],
-    "S": ["|", "J", "L"],
-    "W": ["-", "L", "F"]
+    "N": ["S", "|", "7", "F"],
+    "E": ["S", "-", "7", "J"],
+    "S": ["S", "|", "J", "L"],
+    "W": ["S", "-", "L", "F"]
 }
 
-def get_neighbors(pos: Tuple[int, int], maxi: Tuple[int, int]):
+# VALID_PIPES = {
+#     "S": set(["|", "-", "L", "J", "7", "F"]),
+#     "|": set(["|", "7"])
+# }
+
+def get_neighbors(grid: NDArray[np.int32], pos: Tuple[int, int], maxi: Tuple[int, int]):
     # Up
-    if pos[0] > 0:
+    if grid[pos] in VALID_PIPES["S"] and pos[0] > 0:
         yield "N", (pos[0] - 1, pos[1])
     # Down
-    if pos[0] < maxi[0] - 1:
+    if grid[pos] in VALID_PIPES["N"] and pos[0] < maxi[0] - 1:
         yield "S", (pos[0] + 1, pos[1])
     # Left
-    if pos[1] > 0:
+    if grid[pos] in VALID_PIPES["E"] and pos[1] > 0:
         yield "W", (pos[0], pos[1] - 1)
     # Right
-    if pos[1] < maxi[1] - 1:
+    if grid[pos] in VALID_PIPES["W"] and pos[1] < maxi[1] - 1:
         yield "E", (pos[0], pos[1] + 1)
 
 
-def part1(lines: List[str]):
+def part1(lines: List[str]) -> Tuple[List[Tuple[int, int]], int]:
     grid_l: List[List[str]] = []
     for line in lines:
         grid_l.append(list(line))
@@ -39,7 +45,7 @@ def part1(lines: List[str]):
     searching = True
     while searching:
         path = paths.popleft()
-        for direction, neighbor in get_neighbors(path[-1], maxi):
+        for direction, neighbor in get_neighbors(grid, path[-1], maxi):
             new_path = path.copy()
             if len(new_path) >= 2 and neighbor == new_path[-2]:
                 # Don't go backwards!
@@ -53,17 +59,70 @@ def part1(lines: List[str]):
                 furthest_point = new_path[middle]
                 print(furthest_point)
                 searching = False
-                return middle
+                return new_path, middle
             if grid[neighbor] in VALID_PIPES[direction]:
                 new_path.append(neighbor)
                 paths.append(new_path)
+    raise ValueError("This means there is no solution found?")
 
-def part2(lines: List[str]):
-    return 0
+
+def part2(lines: List[str], loop: Set[Tuple[int, int]]):
+    grid_l: List[List[str]] = []
+    for line in lines:
+        grid_l.append(list(line))
+    grid = np.array(grid_l)
+    maxi: Tuple[int, int] = (grid.shape[0], grid.shape[1])
+
+    total = 0
+    for i in range(grid.shape[0]):
+        for j in range(grid.shape[1]):
+            # If part of the loop, skip, can't be inside or outside
+            if (i, j) in loop:
+                continue
+
+            # Use raycasting algorithm to determine if point is inside or outside of loop
+            # Cast left
+            left_coordinates = [(i, x) for x in range(j) if grid[i, x] != "-"]
+            # left_chunks = "".join([" " if c not in loop else grid[c] for c in left_coordinates]).split()
+            # left_chunks = [u.replace("-", "") for u in left_chunks]
+            # s = sum([len(c) for c in left_chunks])
+            s = len(set(left_coordinates).intersection(loop))
+            if s % 2 == 0:
+                continue
+            # Cast right
+            right_coordinates = [(i, x) for x in range(j, maxi[1]) if grid[i, x] != "-"]
+            # right_chunks = "".join([" " if c not in loop else grid[c] for c in right_coordinates]).split()
+            # right_chunks = [u.replace("-", "") for u in right_chunks]
+            # s = sum([len(c) for c in right_chunks])
+            s = len(set(right_coordinates).intersection(loop))
+            if s % 2 == 0:
+                continue
+            # Cast up
+            up_coordinates = [(x, j) for x in range(i) if grid[x, j] != "|"]
+            # up_chunks = "".join([" " if c not in loop else grid[c] for c in up_coordinates]).split()
+            # up_chunks = [u.replace("|", "") for u in up_chunks]
+            # s = sum([len(c) for c in up_chunks])
+            s = len(set(up_coordinates).intersection(loop))
+            if s % 2 == 0:
+                continue
+            # Cast down
+            down_coordinates = [(x, j) for x in range(i, maxi[0]) if grid[x, j] != "|"]
+            # down_chunks = "".join([" " if c not in loop else grid[c] for c in down_coordinates]).split()
+            # down_chunks = [u.replace("|", "") for u in down_chunks]
+            # s = sum([len(c) for c in down_chunks])
+            s = len(set(down_coordinates).intersection(loop))
+            if s % 2 == 0:
+                continue
+
+            print(f"{(i, j)} is IN!")
+            total += 1
+    return total
+
 
 
 if __name__ == "__main__":
-    with open("day1/input.txt", "r") as f:
+    with open("day10/input.txt", "r") as f:
         content = f.readlines()
-        print(part1(content))
-        print(part2(content))
+        loop, distance = part1(content)
+        print(distance)
+        print(part2(content, set(loop)))
