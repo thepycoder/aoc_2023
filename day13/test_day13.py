@@ -55,9 +55,19 @@ def test_part2():
 #####.##.
 ..##..###
 #....#..#"""
-    assert part2(example.split("\n\n")) == 0
+    answer_map = part1(example.split("\n\n"))[1]
+    assert part2(example.split("\n\n"), answer_map) == 400
+
+
+def test_part2_first_error():
+    with open("day13/input.txt") as f:
+        content = f.read().split("\n\n")
+        answer_map = part1(content)[1]
+        assert part2(content, answer_map) < 48487
 
 
 def test_part2_full():
-    with open("template/input.txt") as f:
-        assert part2(f.readlines()) == 0
+    with open("day13/input.txt") as f:
+        content = f.read().split("\n\n")
+        answer_map = part1(content)[1]
+        assert part2(content, answer_map) == 37617
