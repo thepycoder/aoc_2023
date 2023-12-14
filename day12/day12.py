@@ -1,5 +1,6 @@
 from collections import defaultdict, deque
 from dataclasses import dataclass, replace
+from functools import lru_cache
 from typing import List
 
 
@@ -9,10 +10,34 @@ class HotSpringLine:
     hotsprings: str
     checksum: List[int]
 
+    def __hash__(self):
+        return hash(self.hotsprings)
+    # def __eq__(self, other):
+    #     return self.line_nr == other.line_nr and self.hotsprings == other.hotsprings
 
+
+@lru_cache()
 def check_line_is_valid(hotspringline: HotSpringLine):
+    # Final check
+    if hotspringline.hotsprings.count("?") == 0:
+        chunks = hotspringline.hotsprings.replace(".", " ").replace("?", " ").split()
+        if len(chunks) != len(hotspringline.checksum):
+            return False
+        for i, chunk in enumerate(chunks):
+            if len(chunk) != hotspringline.checksum[i]:
+                return False
+        return True
+
+
     # Replace all . and ? and check if no chunk is already too large
-    # chunks = hotspringline.hotsprings.replace(".", " ").split()
+    # If we check the chunks up until the first ?, and compare them against the list, we can kill them early if wrong
+    first_qm = hotspringline.hotsprings.index("?")
+    chunks = hotspringline.hotsprings[:first_qm].replace(".", " ").split()
+    for chunk, wanted_length in zip(chunks, hotspringline.checksum):
+        if len(chunk) > wanted_length:
+            return False
+
+
     # index = 0
     # for chunk in chunks:
     #     if chunk.count("#") == len(chunk):
@@ -30,15 +55,6 @@ def check_line_is_valid(hotspringline: HotSpringLine):
         hotspringline.checksum
     ):
         return False
-
-    # Final check
-    if hotspringline.hotsprings.count("?") == 0:
-        chunks = hotspringline.hotsprings.replace(".", " ").replace("?", " ").split()
-        if len(chunks) != len(hotspringline.checksum):
-            return False
-        for i, chunk in enumerate(chunks):
-            if len(chunk) > hotspringline.checksum[i]:
-                return False
 
     return True
 
@@ -79,7 +95,11 @@ def part1(lines: List[str]):
 
 
 def part2(lines: List[str]):
-    return 0
+    extended_lines = []
+    for line in lines:
+        parts = line.split(" ")
+        extended_lines.append(parts[0]*5 + " " + parts[1]*5)
+    return part1(extended_lines)
 
 
 if __name__ == "__main__":
