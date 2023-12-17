@@ -22,10 +22,19 @@ def test_part1_full():
 
 
 def test_part2():
-    example = """"""
-    assert part2(example.splitlines()) == 0
+    example = r""".|...\....
+|.-.\.....
+.....|-...
+........|.
+..........
+.........\
+..../.\\..
+.-.-/..|..
+.|....-|.\
+..//.|...."""
+    assert part2(example.splitlines()) == 51
 
 
 def test_part2_full():
-    with open("template/input.txt") as f:
+    with open("day16/input.txt") as f:
         assert part2(f.readlines()) == 0

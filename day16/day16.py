@@ -1,11 +1,11 @@
 from collections import deque
-from copy import copy, deepcopy
+from copy import copy
 from dataclasses import dataclass
-from hashlib import new
 from typing import List, Sequence, Set
 
 import numpy as np
 from numpy.typing import NDArray
+from tqdm import tqdm
 
 
 @dataclass
@@ -22,7 +22,7 @@ class Tile:
         return False
 
     def __hash__(self) -> int:
-        return hash(self.coords.tostring().decode() + self.incoming_direction)
+        return hash(self.coords.tobytes().decode() + self.incoming_direction)
 
 
 @dataclass
@@ -62,17 +62,18 @@ direction_effect_mapping = {
     "d.": ["d"]
 }
 
+ORIGIN_TILE = Tile(
+    coords=np.array([0, 0]),
+    incoming_direction="r"
+)
+
 # @profile
-def part1(lines: List[str]):
+def part1(lines: List[str], initial_tile: Tile = ORIGIN_TILE):
     grid_l: List[List[str]] = []
     for line in lines:
         grid_l.append(list(line.strip()))
     grid = np.array(grid_l)
 
-    initial_tile = Tile(
-        coords=np.array([0, 0]),
-        incoming_direction="r"
-    )
     current_beams: deque[Beam] = deque([Beam(path=[initial_tile])])
 
     visited_tiles: Set[Tile] = set([initial_tile])
@@ -99,16 +100,16 @@ def part1(lines: List[str]):
             new_beam = Beam(path=beam.path.copy())
             new_beam.path.append(new_tile)
 
-            if len(new_beam.path) != len(set(new_beam.path)):
-                # Stop condition
-                continue
+            # if len(new_beam.path) != len(set(new_beam.path)):
+            #     # Stop condition
+            #     continue
 
             current_beams.append(new_beam)
     
             # display(grid, new_beam.path)
-            if iteration % 1000 == 0:
-                print(len(current_beams))
-                display(grid, new_beam.path)
+            # if iteration % 1000 == 0:
+            #     print(len(current_beams))
+            #     display(grid, new_beam.path)
         iteration += 1
         # print("\n\n")
     activated_tiles = {v.coords.tobytes().decode(): v for v in visited_tiles}
@@ -121,10 +122,39 @@ def display(grid: NDArray[np.str_], visited_tiles: Sequence[Tile]) -> None:
         grid_c[tuple(tile.coords)] = tile.incoming_direction
     print("\n".join(["".join(row) for row in grid_c]))
         
-    
 
 def part2(lines: List[str]):
-    return 0
+    rows = len(lines) - 1
+    columns = len(list(lines[0].strip())) - 1
+
+    total = 0
+
+    # Columns, going down
+    for coord in tqdm([np.array([0, i]) for i in range(columns)]):
+        initial_tile = Tile(coords=coord, incoming_direction="d")
+        total = calc_part1(lines, total, initial_tile)
+
+    # Columns, going up
+    for coord in tqdm([np.array([rows, i]) for i in range(columns)]):
+        initial_tile = Tile(coords=coord, incoming_direction="u")
+        total = calc_part1(lines, total, initial_tile)
+
+    # Rows, going right
+    for coord in tqdm([np.array([i, 0]) for i in range(rows)]):
+        initial_tile = Tile(coords=coord, incoming_direction="r")
+        total = calc_part1(lines, total, initial_tile)
+
+    # Rows, going left
+    for coord in tqdm([np.array([i, columns]) for i in range(rows)]):
+        initial_tile = Tile(coords=coord, incoming_direction="l")
+        total = calc_part1(lines, total, initial_tile)
+    return total
+
+def calc_part1(lines: List[str], total: int, initial_tile: Tile) -> int:
+    result = part1(lines, initial_tile)
+    if result > total:
+        total = result
+    return total
 
 
 if __name__ == "__main__":
